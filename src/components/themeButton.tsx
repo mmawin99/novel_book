@@ -1,15 +1,13 @@
 'use client'
-
-import { useMounted } from 'use100hooks'
 import { ThemeAnimationType, useModeAnimation } from 'react-theme-switch-animation'
 import { Moon, Sun } from 'lucide-react'
+import { useIsMounted } from 'usehooks-ts'
 
 export function ThemeToggleButton() {
   const { ref, toggleSwitchTheme, isDarkMode } = useModeAnimation({
     animationType: ThemeAnimationType.BLUR_CIRCLE
   })
-  const isMounted = useMounted()
-
+  const isMounted = useIsMounted()
   if (isMounted) 
     return (
       <button
