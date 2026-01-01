@@ -55,7 +55,7 @@ export function NovelList() {
           </p>
         </section>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:grid-cols-3">
           {pagedNovels.map((novel) => (
             <NovelCard key={`novel:${novel.id}`} novel={novel} />
           ))}

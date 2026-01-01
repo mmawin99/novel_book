@@ -3,8 +3,13 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { User, ChevronRight, X } from "lucide-react"
-import { ThemeToggleButton } from "./themeButton"
+import dynamic from 'next/dynamic'
 import { usePathname } from "next/navigation"
+
+const ThemeToggleButton = dynamic(
+  () => import('@/components/themeButton').then(mod => mod.ThemeToggleButton),
+  { ssr: false }
+)
 
 const genres = [
   "All",
@@ -44,30 +49,34 @@ export const Navbar = ({withSubmenu = false}: {withSubmenu?: boolean}) => {
                 <span>Novel</span>
               </Link>
               <div className="flex flex-row gap-2">
-                <button
-                  className={`relative flex h-10.5 items-center whitespace-nowrap text-sm transition-colors ${
-                    pathname === "/"
-                      ? "font-medium text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  นิยายทั้งหมด
-                  {pathname === "/" && (
-                    <div className="absolute -bottom-px left-0 right-0 h-0.5 bg-foreground" />
-                  )}
-                </button>
-                <button
-                  className={`relative flex h-10.5 items-center whitespace-nowrap text-sm transition-colors ${
-                    pathname === "/"
-                      ? "font-medium text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  รายการที่คั่นไว้
-                  {pathname === "/bookmarks" && (
-                    <div className="absolute -bottom-px left-0 right-0 h-0.5 bg-foreground" />
-                  )}
-                </button>
+                <Link href="/">
+                  <div
+                    className={`relative flex h-10.5 items-center whitespace-nowrap text-sm transition-colors ${
+                      pathname === "/"
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    นิยายทั้งหมด
+                    {pathname === "/" && (
+                      <div className="absolute -bottom-px left-0 right-0 h-0.5 bg-foreground" />
+                    )}
+                  </div>
+                </Link>
+                <Link href="/bookmarks">
+                  <div
+                    className={`relative flex h-10.5 items-center whitespace-nowrap text-sm transition-colors ${
+                      pathname === "/bookmarks"
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    รายการที่คั่นไว้
+                    {pathname === "/bookmarks" && (
+                      <div className="absolute -bottom-px left-0 right-0 h-0.5 bg-foreground" />
+                    )}
+                  </div>
+                </Link>
               </div>
             </div>
             <div className="flex items-center gap-2 md:gap-4">
@@ -111,18 +120,23 @@ export const Navbar = ({withSubmenu = false}: {withSubmenu?: boolean}) => {
           </div>
         </div>
         )}
-        <div className="border-t border-border md:hidden">
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="flex w-full items-center justify-between px-4 py-3 text-sm"
-          >
-            <span className="font-medium">Filter by Genre: {activeGenre}</span>
-            <ChevronRight size={16} className="text-muted-foreground" />
-          </button>
-        </div>
+        {
+          withSubmenu &&
+          <div className="border-t border-border md:hidden">
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="flex w-full items-center justify-between px-4 py-3 text-sm"
+            >
+              <span className="font-medium">หมวดหมู่: {activeGenre}</span>
+              <ChevronRight size={16} className="text-muted-foreground" />
+            </button>
+          </div>
+        }
       </nav>
 
-      <div className="h-25.25 md:h-25.25" />
+      {
+        withSubmenu ? <div className="h-25.25" /> : <div className="h-14" />
+      }
 
       {isDrawerOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center md:hidden">
