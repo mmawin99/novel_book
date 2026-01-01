@@ -37,7 +37,6 @@ body {
   transition: background .3s ease, transform .3s ease;
 }
 
-/* active */
 .swiper-pagination-bullet-active.banner-bullet-dash {
   background: #fff;
 }
