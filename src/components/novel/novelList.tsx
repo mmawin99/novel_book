@@ -1,30 +1,17 @@
 "use client"
 
-import { useNovelStore } from "@/stores/useNovelStore"
 import { useEffect, useMemo, useState } from "react"
 import { NovelCard } from "./novelCard"
-import { generatePagination } from "@/utils/pagination"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Novel } from "@/types/novel"
+import Pagination from  "@/components/pagination"
 
 
-export function NovelList() {
-  const { novels, isLoading, loadNovels } = useNovelStore()
-
+export function NovelList({novels}: { novels: Novel[] }) {
   const perPage = 12
   const [page, setPage] = useState(1)
-
-  useEffect(() => {
-    loadNovels()
-  }, [loadNovels])
-
   const totalPages = useMemo(() => {
     return Math.max(1, Math.ceil(novels.length / perPage))
-  }, [novels.length])
-
-  const pagination = useMemo(() => {
-    return generatePagination(totalPages, page)
-  }, [totalPages, page])
-
+  }, [novels.length, perPage])
   const pagedNovels = useMemo(() => {
     const start = (page - 1) * perPage
     return novels.slice(start, start + perPage)
@@ -36,12 +23,6 @@ export function NovelList() {
       behavior: "smooth",
     })
   }, [page])
-
-  if (isLoading && novels.length === 0) {
-    return (
-      <div className="h-40 md:h-60 lg:h-80 rounded-xl bg-gray-200 animate-pulse" />
-    )
-  }
 
   if (!novels.length) return null
 
@@ -60,57 +41,7 @@ export function NovelList() {
             <NovelCard key={`novel:${novel.id}`} novel={novel} />
           ))}
         </div>
-
-        {totalPages > 1 && (
-          <div className="flex justify-center py-4">
-            <nav className="flex items-center gap-1">
-              {pagination.map((item, index) => {
-                if (item === "...") {
-                  return (
-                    <span key={index} className="px-3 py-2 text-sm text-muted-foreground">…</span>
-                  )
-                }
-
-                if (item === "prev") {
-                  return (
-                    <button
-                      key={index}
-                      disabled={page === 1}
-                      onClick={() =>
-                        setPage((p) => Math.max(1, p - 1))
-                      }
-                      className="rounded-md px-3 py-2 text-sm font-medium hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed">
-                      <ChevronLeft />
-                    </button>
-                  )
-                }
-
-                if (item === "next") {
-                  return (
-                    <button
-                      key={index}
-                      disabled={page === totalPages}
-                      onClick={() =>
-                        setPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      className="rounded-md px-3 py-2 text-sm font-medium hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed">
-                      <ChevronRight />
-                    </button>
-                  )
-                }
-
-                return (
-                  <button
-                    key={index}
-                    onClick={() => setPage(item)}
-                    className={`rounded-md px-3 py-2 text-sm font-medium ${item === page ? "bg-sky-500 text-white" : "hover:bg-muted"}`}>
-                    {item}
-                  </button>
-                )
-              })}
-            </nav>
-          </div>
-        )}
+        <Pagination page={page} totalPages={totalPages} setPage={setPage} />
       </div>
     </div>
   )
