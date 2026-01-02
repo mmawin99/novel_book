@@ -1,7 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useBannerStore } from '@/stores/useBannerStore'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination } from 'swiper/modules'
 import Image from 'next/image'
@@ -9,20 +7,9 @@ import Image from 'next/image'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
+import { NovelBanner } from '@/types/banner'
 
-export default function Banner() {
-  const { banners, loadBanners, isLoading } = useBannerStore()
-
-  useEffect(() => {
-    loadBanners()
-  }, [loadBanners])
-
-  if (isLoading && banners.length === 0) {
-    return (
-      <div className="h-40 md:h-60 lg:h-80 rounded-xl bg-gray-200 animate-pulse" />
-    )
-  }
-
+export default function Banner({ banners }: { banners: NovelBanner[] }) {
   if (!banners.length) return null
 
   return (

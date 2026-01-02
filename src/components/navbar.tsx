@@ -3,13 +3,8 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { User, ChevronRight, X } from "lucide-react"
-import dynamic from 'next/dynamic'
 import { usePathname } from "next/navigation"
-
-const ThemeToggleButton = dynamic(
-  () => import('@/components/themeButton').then(mod => mod.ThemeToggleButton),
-  { ssr: false }
-)
+import { ThemeToggleButton } from "./themeButton"
 
 const genres = [
   "All",
