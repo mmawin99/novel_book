@@ -3,19 +3,15 @@ import Link from "next/link"
 import Image from "next/image"
 import {
   BookIcon,
-  BookOpenIcon,
   EyeIcon,
   ClockIcon,
   TagIcon
 } from "lucide-react"
-import { useBookmarkStore } from "@/stores/useBookmarkStore"
 
 export function NovelCard({ novel }) {
-  const { getBookmarkByNovelId } = useBookmarkStore()
-  const hasBookmark = getBookmarkByNovelId(novel.id) !== undefined
 
   return (
-    <div className="group flex gap-4 rounded-md border bg-card p-4 hover:shadow-md transition">
+    <div className="group flex gap-4 rounded-xl shadow-xl dark:bg-zinc-900 p-4 hover:shadow-2xl transition">
       <Link
         href={`/novel/${novel.id}`}
         className="relative aspect-4/6 w-28 shrink-0 overflow-hidden rounded-lg"
@@ -71,17 +67,8 @@ export function NovelCard({ novel }) {
             hover:bg-sky-600 active:bg-sky-700
           "
         >
-          {hasBookmark ? (
-            <>
-              <BookOpenIcon size={16} />
-              อ่านต่อ
-            </>
-          ) : (
-            <>
-              <BookIcon size={16} />
-              อ่านนิยาย
-            </>
-          )}
+          <BookIcon size={16} />
+          อ่านนิยาย
         </Link>
       </div>
     </div>
