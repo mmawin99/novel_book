@@ -9,9 +9,9 @@ type BookmarkStore = {
 
   loadBookmarks: () => Promise<void>
   upsertBookmark: (bookmark: Bookmark) => Promise<void>
-  removeBookmark: (novel_id: string) => Promise<void>
+  removeBookmark: (novel_id: string, episode: number) => Promise<void>
 
-  getBookmarkByNovelId: (novel_id: string) => Bookmark | undefined
+  getBookmarkByEpisodeAndNovelId: (novel_id: string, episode: number) => Bookmark | undefined
   clearBookmarks: () => void
 }
 
@@ -23,47 +23,48 @@ export const useBookmarkStore = create<BookmarkStore>()(
 
       loadBookmarks: async () => {
         set({ isLoading: true })
-        const data = await BookmarkService.getBookmarks()
-        set({ bookmarks: data, isLoading: false })
+        try {
+          const data = await BookmarkService.getBookmarks()
+          set({ bookmarks: data })
+        } finally {
+          set({ isLoading: false })
+        }
       },
 
       upsertBookmark: async (bookmark) => {
-        set({ isLoading: true })
-
-        await BookmarkService.saveBookmark(bookmark)
-
         set((state) => ({
           bookmarks: [
-            ...state.bookmarks.filter(
-              (b) => b.novel_id !== bookmark.novel_id
-            ),
-            {
-              ...bookmark,
-              updated_at: new Date().toISOString(),
-            },
+            ...state.bookmarks.filter(b => !(b.novel_id === bookmark.novel_id && b.episode === bookmark.episode)),
+            { ...bookmark, updated_at: new Date().toISOString() },
           ],
-          isLoading: false,
         }))
+
+        try {
+          await BookmarkService.saveBookmark(bookmark)
+        } catch (err) {
+          console.error('Failed to save bookmark', err)
+        }
       },
-      removeBookmark: async (novel_id) => {
-        set({ isLoading: true })
 
-        await BookmarkService.removeBookmark(novel_id)
-
+      removeBookmark: async (novel_id, episode) => {
         set((state) => ({
-          bookmarks: state.bookmarks.filter(
-            (b) => b.novel_id !== novel_id
-          ),
-          isLoading: false,
+          bookmarks: state.bookmarks.filter(b => !(b.novel_id === novel_id && b.episode === episode)),
         }))
+
+        try {
+          await BookmarkService.removeBookmark(novel_id)
+        } catch (err) {
+          console.error('Failed to remove bookmark', err)
+        }
       },
-      getBookmarkByNovelId: (novel_id) =>
-        get().bookmarks.find((b) => b.novel_id === novel_id),
+
+      getBookmarkByEpisodeAndNovelId: (novel_id, episode) =>
+        get().bookmarks.find((b) => b.novel_id ===  novel_id && b.episode === episode),
 
       clearBookmarks: () => set({ bookmarks: [] }),
     }),
     {
-      name: 'novel-bookmarks',
+      name: 'my-bookmarks',
     }
   )
 )
