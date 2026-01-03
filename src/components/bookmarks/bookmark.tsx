@@ -1,10 +1,12 @@
 "use client"
+import { BookmarkService } from "@/services/bookmark.service"
 import { useBookmarkStore } from "@/stores/useBookmarkStore"
-import { BookmarkIcon, CheckIcon, ListIcon, Trash2Icon } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
+import { Bookmark } from "@/types/bookmark"
+import { Trash2Icon } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 import { z } from "zod"
+import BookmarkCard from "./bookmarkCard"
 
 const BulkBookmarkSchema = z.object({
   selected: z
@@ -15,8 +17,8 @@ const BulkBookmarkSchema = z.object({
 
 const BookmarksList = () => {
   const bookmarks = useBookmarkStore((s) => s.bookmarks)
-  const removeBookmark = useBookmarkStore((s) => s.removeBookmark)
-
+  const removeBookmarks = useBookmarkStore((s) => s.bulkRemoveBookmarks)
+  const upsertBookmark = useBookmarkStore((s) => s.upsertBookmark)
   const [isEditMode, setIsEditMode] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +32,11 @@ const BookmarksList = () => {
         : [...prev, key]
     )
   }
-
+  const addRandomBookmark = async () => {
+    const newBookmark: Bookmark = await BookmarkService.getRandomBookmark()
+    upsertBookmark(newBookmark)
+    toast.success("เพิ่มรายการคั่นหน้าเรียบร้อยแล้ว")
+  }
   const bulkRemoveBookmarks = async () => {
     const result = BulkBookmarkSchema.safeParse({ selected })
 
@@ -41,17 +47,15 @@ const BookmarksList = () => {
 
     setError(null)
 
-    for (const key of selected) {
-      const [novel_id, episode] = key.split("|")
-      await removeBookmark(novel_id, Number(episode))
-    }
+    await removeBookmarks(selected)
+    toast.success("ลบรายการที่คั่นหน้าที่เลือกเรียบร้อยแล้ว")
 
     setSelected([])
     setIsEditMode(false)
   }
 
   return (
-    <div className="container md:mx-auto px-2.5 md:px-0 mt-6">
+    <div className="md:max-w-screen-md lg:max-w-screen-lg mx-auto px-2.5 md:px-0 mt-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="text-sm text-slate-400">
@@ -60,16 +64,34 @@ const BookmarksList = () => {
 
         <div className="flex gap-2">
           {!isEditMode ? (
-            <button
-              onClick={() => setIsEditMode(true)}
-              className="flex flex-row gap-2 items-center px-3 py-2 font-medium cursor-pointer
-              border border-zinc-300 text-zinc-700 hover:bg-zinc-400 dark:border-zinc-700 
-              dark:text-zinc-300 dark:hover:bg-zinc-800 rounded-full"
-            >
-              แก้ไข
-            </button>
+            <>
+              <button
+                onClick={() => addRandomBookmark()}
+                className="flex flex-row gap-2 items-center px-3 py-2 font-medium cursor-pointer
+                border border-zinc-300 text-zinc-700 hover:bg-zinc-400 dark:border-zinc-700 
+                dark:text-zinc-300 dark:hover:bg-zinc-800 rounded-full"
+              >
+                เพิ่ม
+              </button>
+              <button
+                onClick={() => setIsEditMode(true)}
+                className="flex flex-row gap-2 items-center px-3 py-2 font-medium cursor-pointer
+                border border-zinc-300 text-zinc-700 hover:bg-zinc-400 dark:border-zinc-700 
+                dark:text-zinc-300 dark:hover:bg-zinc-800 rounded-full"
+              >
+                แก้ไข
+              </button>
+            </>
           ) : (
             <>
+              <button
+                onClick={() => addRandomBookmark()}
+                className="flex flex-row gap-2 items-center px-3 py-2 font-medium cursor-pointer
+                border border-zinc-300 text-zinc-700 hover:bg-zinc-400 dark:border-zinc-700 
+                dark:text-zinc-300 dark:hover:bg-zinc-800 rounded-full"
+              >
+                เพิ่ม
+              </button>
               <button
                 onClick={() => {
                   setIsEditMode(false)
@@ -101,101 +123,22 @@ const BookmarksList = () => {
         <div className="mb-3 text-sm text-red-500">{error}</div>
       )}
 
-      {/* List */}
+      {/* Bookmark List */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {bookmarks.map((b) => {
           const key = `${b.novel_id}|${b.episode}`
           const checked = selected.includes(key)
-          const date = new Date(b.updated_at)
-          const datePart = date.toLocaleDateString('th-TH', {
-            day: 'numeric',
-            month: 'short',
-            year: '2-digit',
-          })
 
-          const timePart = date.toLocaleTimeString('th-TH', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })
           return (
-            <div key={key} className="flex gap-2" onClick={() => {
-              if (isEditMode) {
-                toggleSelect(key)
-              }
+            <div key={key} className="flex gap-2 cursor-pointer" onClick={() => {
+              if (isEditMode) toggleSelect(key)
             }}>
-              <div className="group flex gap-4 hover:shadow-2xl transition">
-                <Link
-                  href={`/novel/${b.novel_id}`}
-                  className="relative aspect-4/6 w-28 shrink-0 overflow-hidden rounded-lg"
-                >
-                  <Image
-                    src={b.novel_cover}
-                    alt={b.novel_title}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105 select-none"
-                  />
-                </Link>
-
-                <div className="flex flex-1 flex-col justify-between gap-2">
-                  <div className="flex flex-col gap-2">
-                    <Link href={`/novel/${b.novel_id}`}>
-                      <h3 className="line-clamp-2 text-lg font-bold text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-400">
-                        {b.novel_title}
-                      </h3>
-                    </Link>
-
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {b.publisher_name}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
-                    <span className="inline-flex items-center gap-1">
-                      <ListIcon size={14} />
-                      ตอนที่ {b.episode}: {b.episode_title}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <BookmarkIcon fill={"currentColor"} size={14} />
-                      คั่นล่าสุด {datePart} / {timePart} น.
-                    </span>
-                  </div>
-                </div>
-                {isEditMode && (
-                  <label className="relative flex items-start pt-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleSelect(key)}
-                      className="peer sr-only"
-                    />
-
-                    <div
-                      className="
-                        w-5.5 h-5.5 rounded-full border-2 border-zinc-400
-                        peer-checked:bg-blue-500
-                        peer-checked:border-blue-500
-                        flex items-center justify-center
-                        transition
-                      "
-                    >
-                      {checked && <CheckIcon />}
-                    </div>
-                  </label>
-                )}
-              </div>
-              {/* <div className="border rounded p-2 w-full">
-                <div className="font-medium">{b.novel_title}</div>
-                <div className="text-sm text-slate-400">
-                  ตอนที่ {b.episode}
-                </div>
-              </div>
-              {isEditMode && (
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => toggleSelect(key)}
-                />
-              )} */}
+              <BookmarkCard 
+                bookmark={b}
+                isEditMode={isEditMode}
+                checked={checked}
+                toggleSelect={()=> toggleSelect(key)}
+              />
             </div>
           )
         })}

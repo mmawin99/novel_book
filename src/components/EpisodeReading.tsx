@@ -7,6 +7,7 @@ import { Novel } from "@/types/novel"
 import { Episode } from "@/types/episode"
 import Image from "next/image"
 import { useBookmarkStore } from "@/stores/useBookmarkStore"
+import { toast } from "sonner"
 
 interface EpisodeReadingPageProps {
   novel: Novel
@@ -32,6 +33,7 @@ export function EpisodeReadingPage({ novel, episodes, currentEpisode, epNum }: E
   const toggleBookmark = () => {
     if (isBookmarked) {
       removeBookmark(novel.id, epNum)
+      toast.success("ลบรายการคั่นหน้าเรียบร้อยแล้ว")
     } else {
       upsertBookmark({
         novel_id: novel.id,
@@ -42,6 +44,7 @@ export function EpisodeReadingPage({ novel, episodes, currentEpisode, epNum }: E
         novel_cover: novel.cover,
         updated_at: new Date().toISOString(),
       })
+      toast.success("เพิ่มรายการคั่นหน้าเรียบร้อยแล้ว")
     }
   }
   return (

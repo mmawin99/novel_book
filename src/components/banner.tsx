@@ -47,7 +47,7 @@ export default function Banner({ banners }: { banners: NovelBanner[] }) {
               className="w-full md:w-[75%]! lg:w-[60%]! md:mx-1.5"
             >
               <div className="relative h-40 md:h-60 lg:h-80 mx-0 md:mx-1.5 overflow-hidden w-full">
-                <Image fill src={banner.image} alt="" className="object-cover" />
+                <Image fill src={banner.image} alt="" loading='eager' className="object-cover" />
                 <div className="absolute inset-0 bg-linear-to-t from-black/85 to-transparent" />
 
                 <div className="absolute top-4 left-4 bg-red-500 text-white text-xs md:text-sm px-3 py-1 rounded-full">

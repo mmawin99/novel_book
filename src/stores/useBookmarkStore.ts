@@ -10,7 +10,7 @@ type BookmarkStore = {
   loadBookmarks: () => Promise<void>
   upsertBookmark: (bookmark: Bookmark) => Promise<void>
   removeBookmark: (novel_id: string, episode: number) => Promise<void>
-
+  bulkRemoveBookmarks: (keys: string[]) => Promise<void>
   getBookmarkByEpisodeAndNovelId: (novel_id: string, episode: number) => Bookmark | undefined
   clearBookmarks: () => void
 }
@@ -34,8 +34,8 @@ export const useBookmarkStore = create<BookmarkStore>()(
       upsertBookmark: async (bookmark) => {
         set((state) => ({
           bookmarks: [
-            ...state.bookmarks.filter(b => !(b.novel_id === bookmark.novel_id && b.episode === bookmark.episode)),
             { ...bookmark, updated_at: new Date().toISOString() },
+            ...state.bookmarks.filter(b => !(b.novel_id === bookmark.novel_id && b.episode === bookmark.episode)),
           ],
         }))
 
@@ -45,14 +45,29 @@ export const useBookmarkStore = create<BookmarkStore>()(
           console.error('Failed to save bookmark', err)
         }
       },
+      // accept array of novel_id and episode like ["novel1|1", "novel2|3"]
+      bulkRemoveBookmarks: async (keys: string[]) => {
+        const keySet = new Set(keys)
 
+        set((state) => ({
+          bookmarks: state.bookmarks.filter(
+            (b) => !keySet.has(`${b.novel_id}|${b.episode}`)
+          ),
+        }))
+
+        try {
+          await BookmarkService.removeBookmark(keys)
+        } catch (err) {
+          console.error('Failed to remove bookmarks', err)
+        }
+      },
       removeBookmark: async (novel_id, episode) => {
         set((state) => ({
           bookmarks: state.bookmarks.filter(b => !(b.novel_id === novel_id && b.episode === episode)),
         }))
 
         try {
-          await BookmarkService.removeBookmark(novel_id)
+          await BookmarkService.removeBookmark([`${novel_id}|${episode}`])
         } catch (err) {
           console.error('Failed to remove bookmark', err)
         }
