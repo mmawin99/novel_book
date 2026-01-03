@@ -76,7 +76,7 @@ const DetailCard = ({ novel, withButton = true }: { novel: Novel, withButton?: b
           {withButton && (
             <div className='flex flex-row gap-2'>
               <div className="mt-auto inline-flex w-fit items-center gap-2 rounded-md
-                bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600 active:bg-sky-700 cursor-pointer"
+                bg-primary/80 px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 active:bg-primary cursor-pointer"
                 onClick={() => {
                   handleReadClick(1);
                 }}
@@ -105,7 +105,7 @@ const DetailCard = ({ novel, withButton = true }: { novel: Novel, withButton?: b
               href={novel.publisher.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-sm font-semibold text-primary hover:underline"
             >
               {novel.publisher.name}
             </a>

@@ -81,14 +81,14 @@ const BookmarkCard = ({
 
               <div
                 className="
-              w-5.5 h-5.5 rounded-full border-2 border-zinc-400
-              peer-checked:bg-blue-500
-              peer-checked:border-blue-500
+              w-5.5 h-5.5 rounded-full border-2 border-primary
+              peer-checked:bg-primary
+              peer-checked:border-primary
               flex items-center justify-center
               transition
             "
               >
-                {checked && <CheckIcon />}
+                {checked && <CheckIcon className="text-white" />}
               </div>
             </label>
           )}

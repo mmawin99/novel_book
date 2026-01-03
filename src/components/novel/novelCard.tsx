@@ -63,8 +63,8 @@ export function NovelCard({ novel }) {
           href={`/novel/${novel.id}`}
           className="
             mt-auto inline-flex w-fit items-center gap-2 rounded-md
-            bg-sky-500 px-4 py-2 text-sm font-medium text-white
-            hover:bg-sky-600 active:bg-sky-700
+            bg-primary/80 px-4 py-2 text-sm font-medium text-white
+            hover:bg-primary/90 active:bg-primary
           "
         >
           <BookIcon size={16} />

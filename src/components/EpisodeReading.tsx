@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, List, Bookmark, Home, XIcon, Loader } from "lucide-react"
+import { ChevronLeft, ChevronRight, List, Bookmark, Home, XIcon, Loader, BookMarkedIcon, EyeIcon, HeartIcon } from "lucide-react"
 import { Novel } from "@/types/novel"
 import { Episode } from "@/types/episode"
 import Image from "next/image"
@@ -60,7 +60,7 @@ export function EpisodeReadingPage({ novel, episodes, currentEpisode, epNum }: E
               className="p-2 hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors flex items-center gap-2"
               aria-label="List of episodes"
             >
-              <List size={20} />
+              <BookMarkedIcon size={20} />
               <span className="hidden sm:inline text-sm font-medium">สารบัญ</span>
             </button>
           </div>
@@ -91,15 +91,25 @@ export function EpisodeReadingPage({ novel, episodes, currentEpisode, epNum }: E
         </article>
 
         {/* Publisher Info */}
-        <footer className="border-t border-zinc-500 dark:border-zinc-950 px-6 py-4">
-          <div className="flex flex-col items-center text-center gap-4">
+        <footer className="border-t border-primary px-6 py-2">
+          <div className="flex flex-row justify-between gap-4">
+            <div className="flex flex-row items-center gap-4">
+              <div className="flex flex-row items-center gap-2">
+                <EyeIcon />
+                <span className="text-sm font-medium">{novel.views.toLocaleString()} วิว</span>
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <HeartIcon className="text-red-500" fill="currentColor" />
+                <span className="text-sm font-medium">{novel.likes.toLocaleString()} ถูกใจ</span>
+              </div>
+            </div>
             <div className="flex items-center gap-3">
               <Image
                 width={48}
                 height={48}
                 src={novel.publisher.logo || "/placeholder.svg?height=48&width=48"}
                 alt={novel.publisher.name}
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover"
               />
               <div className="text-left">
                 <p className="text-sm text-muted-foreground">เผยแพร่โดย</p>

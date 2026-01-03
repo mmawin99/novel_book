@@ -39,7 +39,7 @@ const EpisodeList = ({ episodes, novelId }: { episodes: Episode[], novelId: stri
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <p className="font-semibold text-zinc-950 dark:text-white mb-1 group-hover:text-primary transition-colors">
                   ตอนที่ {ep.episode}: {ep.title}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -53,9 +53,9 @@ const EpisodeList = ({ episodes, novelId }: { episodes: Episode[], novelId: stri
 
               <Link
                 href={`/novel/${novelId}/episode/${ep.episode}`} 
-                className="cursor-pointer inline-flex w-max items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 
-                dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors 
-                shrink-0 bg-zinc-300 dark:bg-zinc-950">
+                className="cursor-pointer inline-flex w-max items-center gap-2 px-4 py-2 text-sm font-medium text-white
+                dark:text-white rounded-lg transition-colors 
+                shrink-0 bg-primary/80 hover:bg-primary/90 active:bg-primary">
                 <span>อ่านตอนนี้</span>
                 <ChevronRightIcon className='w-4 h-4' />
               </Link>
