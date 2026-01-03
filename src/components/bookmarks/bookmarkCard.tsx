@@ -43,7 +43,7 @@ const BookmarkCard = ({
     minute: '2-digit',
   })
   return (
-    <div className="group flex gap-4 hover:shadow-2xl transition w-full">
+    <div className="group flex gap-4 transition w-full">
       {
         isEditMode ? (
           <div className="relative aspect-4/6 w-28 shrink-0 overflow-hidden rounded-lg">
