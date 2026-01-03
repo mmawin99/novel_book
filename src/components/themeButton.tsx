@@ -8,13 +8,16 @@ export function ThemeToggleButton() {
   const { resolvedTheme, setTheme } = useTheme()
 
   const { ref, toggleSwitchTheme } = useModeAnimation({
-    animationType: ThemeAnimationType.BLUR_CIRCLE
+    animationType: ThemeAnimationType.CIRCLE,
+    duration: 500
   })
   const isClient = useIsClient();
   const isDarkMode = resolvedTheme === 'dark'
   const themeSwitcher = () => {
     toggleSwitchTheme()
-    setTheme(isDarkMode ? 'light' : 'dark')
+    setTimeout(()=>{
+      setTheme(isDarkMode ? 'light' : 'dark')
+    }, 300);
   }
   if (isClient) 
     return button({ref, onClick: themeSwitcher, isDarkMode})
